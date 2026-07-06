@@ -11,18 +11,17 @@ use Illuminate\View\View;
 class TaskController extends Controller
 {
     public function index(): View
-    {
-        // $tasks = Task::query()
-        //     ->orderByRaw('completed_at is not null')
-        //     ->orderBy('due_date')
-        //     ->latest()
-        //     ->get();
+    {   
+        $tasks = Task::query()
+            ->orderByRaw('completed_at is not null')
+            ->orderBy('due_date')
+            ->latest()
+            ->get();
 
         return view('tasks.index', [
-            // 'tasks' => $tasks,
-            // 'tasksByFrequency' => $tasks->groupBy('frequency'),
-            // 'frequencies' => $this->frequencies(),
-            'tasks' => Task::query()->latest()->get(),
+            'tasks' => $tasks,
+            'tasksByFrequency' => $tasks->groupBy('frequency'),
+            'frequencies' => $this->frequencies(),
         ]);
     }
 
@@ -42,7 +41,7 @@ class TaskController extends Controller
 
     public function toggle(Task $task): RedirectResponse
     {
-       $task->forceFill([
+        $task->forceFill([
             'completed_at' => $task->isCompleted() ? null : now(),
         ])->save();
 
@@ -59,12 +58,14 @@ class TaskController extends Controller
     /**
      * @return array<string, string>
      */
-    // private function frequencies(): array
-    // {
-    //     return [
-    //         'daily' => 'Diarias',
-    //         'weekly' => 'Semanales',
-    //         'monthly' => 'Mensuales',
-    //     ];
-    // }
+   
+   
+    private function frequencies(): array
+    {
+        return [
+            'daily' => 'Diarias',
+            'weekly' => 'Semanales',
+            'monthly' => 'Mensuales',
+        ];
+    }
 }
