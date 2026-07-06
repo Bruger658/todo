@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreTaskRequest extends FormRequest
 {
@@ -17,14 +18,15 @@ class StoreTaskRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, list<string>>
+     * @return array<string, array<int, mixed>>
      */
     public function rules(): array
     {
         return [
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'completed' => ['sometimes', 'boolean'],
+            'frequency' => ['required', 'string', Rule::in(['daily', 'weekly', 'monthly'])],
+            'due_date' => ['nullable', 'date'],
         ];
     }
 }

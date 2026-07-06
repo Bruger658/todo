@@ -21,6 +21,26 @@ it('creates a task with a frequency', function () {
     ]);
 });
 
+it('shows tasks ordered with incomplete tasks first', function () {
+    $completedTask = Task::factory()->create([
+        'title' => 'Completada',
+        'frequency' => 'daily',
+        'due_date' => now()->subDay()->toDateString(),
+        'completed_at' => now(),
+    ]);
+    $pendingTask = Task::factory()->create([
+        'title' => 'Pendiente',
+        'frequency' => 'daily',
+        'due_date' => now()->addDay()->toDateString(),
+        'completed_at' => null,
+    ]);
+
+    $response = $this->get(route('tasks.index'));
+
+    $response->assertSuccessful();
+    $response->assertSeeInOrder([$pendingTask->title, $completedTask->title]);
+});
+
 it('requires a valid frequency when creating a task', function () {
     $response = $this->from(route('tasks.index'))->post(route('tasks.store'), [
         'title' => 'Trabajar',
