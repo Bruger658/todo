@@ -41,6 +41,32 @@ it('shows tasks ordered with incomplete tasks first', function () {
     $response->assertSeeInOrder([$pendingTask->title, $completedTask->title]);
 });
 
+it('updates a task', function () {
+    $task = Task::factory()->create([
+        'title' => 'Original',
+        'description' => 'Detalle original',
+        'frequency' => 'daily',
+        'due_date' => now()->addDay()->toDateString(),
+    ]);
+
+    $response = $this->from(route('tasks.index'))->put(route('tasks.update', $task), [
+        'title' => 'Actualizada',
+        'description' => 'Detalle actualizado',
+        'frequency' => 'weekly',
+        'due_date' => now()->addWeek()->toDateString(),
+    ]);
+
+    $response->assertRedirect(route('tasks.index'));
+
+    $this->assertDatabaseHas('tasks', [
+        'id' => $task->id,
+        'title' => 'Actualizada',
+        'description' => 'Detalle actualizado',
+        'frequency' => 'weekly',
+        'due_date' => now()->addWeek()->toDateString(),
+    ]);
+});
+
 it('requires a valid frequency when creating a task', function () {
     $response = $this->from(route('tasks.index'))->post(route('tasks.store'), [
         'title' => 'Trabajar',
