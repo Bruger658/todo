@@ -22,6 +22,10 @@ class TaskController extends Controller
             'tasks' => $tasks,
             'tasksByFrequency' => $tasks->groupBy('frequency'),
             'frequencies' => $this->frequencies(),
+            'upcomingReminderTasks' => $tasks
+                ->filter(fn (Task $task): bool => $task->shouldShowReminder(now()))
+                ->sortBy(fn (Task $task): ?int => $task->reminderAt()?->getTimestamp())
+                ->values(),
         ]);
     }
 
@@ -57,8 +61,7 @@ class TaskController extends Controller
 
     /**
      * @return array<string, string>
-     */
-   
+     */   
    
     private function frequencies(): array
     {

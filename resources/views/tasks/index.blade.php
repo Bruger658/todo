@@ -64,6 +64,39 @@
                 <div data-auto-dismiss="5000" class="rounded-2xl border border-emerald-300/30 bg-emerald-400/10 px-5 py-4 text-emerald-100 transition duration-300 ease-in-out">{{ session('status') }}</div>
             @endif
 
+            @if ($upcomingReminderTasks->isNotEmpty())
+                <section class="rounded-3xl border border-amber-300/30 bg-amber-300/10 p-5 shadow-xl shadow-amber-950/20">
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm font-semibold uppercase tracking-[0.25em] text-amber-200">Aviso una hora antes</p>
+                            <h2 class="mt-1 text-2xl font-bold text-white">Actividades por realizar pronto</h2>
+                        </div>
+                        <span class="w-fit rounded-full bg-amber-200 px-3 py-1 text-sm font-bold text-slate-950">{{ $upcomingReminderTasks->count() }} pendiente(s)</span>
+                    </div>
+
+                    <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                        @foreach ($upcomingReminderTasks as $reminderTask)
+                            <article class="rounded-2xl border border-amber-200/30 bg-slate-950/70 p-4">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-semibold uppercase tracking-wide text-amber-200">{{ $frequencies[$reminderTask->frequency] ?? $reminderTask->frequency }}</p>
+                                        <h3 class="mt-1 font-semibold text-white">{{ $reminderTask->title }}</h3>
+                                        @if ($reminderTask->description)
+                                            <p class="mt-2 text-sm text-slate-300">{{ $reminderTask->description }}</p>
+                                        @endif
+                                    </div>
+                                    <span class="rounded-full bg-amber-200 px-3 py-1 text-xs font-bold text-slate-950">Pronto</span>
+                                </div>
+                                <div class="mt-4 grid gap-2 text-sm text-amber-50 sm:grid-cols-2">
+                                    <p><span class="font-semibold text-amber-200">Fecha:</span> {{ $reminderTask->due_date?->format('d/m/Y') }}</p>
+                                    <p><span class="font-semibold text-amber-200">Hora:</span> {{ $reminderTask->reminderAt()?->format('H:i') }}</p>
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
+
             <section class="grid gap-6 lg:grid-cols-3">
                 @foreach ($frequencies as $frequency => $label)
                     <div class="rounded-3xl border border-white/10 bg-white/10 p-5 shadow-xl shadow-slate-950/20">
@@ -82,6 +115,9 @@
                                             @endif
                                             @if ($task->due_date)
                                                 <p class="mt-3 text-xs font-medium uppercase tracking-wide text-cyan-200">Fecha: {{ $task->due_date->format('d/m/Y') }}</p>
+                                            @endif
+                                             @if ($task->realization_time)
+                                                <p class="mt-1 text-xs font-medium uppercase tracking-wide text-cyan-200">Hora: {{ $task->reminderAt()?->format('H:i') }}</p>
                                             @endif
                                         </div>
                                         <form method="POST" action="{{ route('tasks.toggle', $task) }}">
@@ -105,6 +141,7 @@
                                                 @endforeach
                                             </select>
                                             <input type="date" name="due_date" value="{{ old('due_date', $task->due_date?->format('Y-m-d')) }}" class="rounded-xl bg-white px-3 py-2 text-sm text-slate-950">
+                                            <input type="time" name="realization_time" value="{{ old('realization_time', $task->realization_time ? \Illuminate\Support\Str::of($task->realization_time)->substr(0, 5) : null) }}" class="rounded-xl bg-white px-3 py-2 text-sm text-slate-950">
                                             <button class="rounded-xl bg-white px-3 py-2 text-sm font-bold text-slate-950">Guardar cambios</button>
                                         </form>
                                         <form method="POST" action="{{ route('tasks.destroy', $task) }}" class="mt-3">
