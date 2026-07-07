@@ -10,6 +10,7 @@ it('creates a task with a frequency', function () {
         'title' => 'Trabajar',
         'description' => 'Todos los días',
         'frequency' => 'daily',
+        'realization_time' => '08:30',
     ]);
 
     $response->assertRedirect(route('tasks.index'));
@@ -18,6 +19,7 @@ it('creates a task with a frequency', function () {
         'title' => 'Trabajar',
         'description' => 'Todos los días',
         'frequency' => 'daily',
+        'realization_time' => '08:30',
     ]);
 });
 
@@ -47,6 +49,7 @@ it('updates a task', function () {
         'description' => 'Detalle original',
         'frequency' => 'daily',
         'due_date' => now()->addDay()->toDateString(),
+        'realization_time' => '08:30',
     ]);
 
     $response = $this->from(route('tasks.index'))->put(route('tasks.update', $task), [
@@ -54,6 +57,7 @@ it('updates a task', function () {
         'description' => 'Detalle actualizado',
         'frequency' => 'weekly',
         'due_date' => now()->addWeek()->toDateString(),
+        'realization_time' => '08:30',
     ]);
 
     $response->assertRedirect(route('tasks.index'));
@@ -64,6 +68,7 @@ it('updates a task', function () {
         'description' => 'Detalle actualizado',
         'frequency' => 'weekly',
         'due_date' => now()->addWeek()->toDateString(),
+        'realization_time' => '08:30',
     ]);
 });
 

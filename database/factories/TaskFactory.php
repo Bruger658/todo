@@ -22,6 +22,7 @@ class TaskFactory extends Factory
             'description' => fake()->sentence(),
             'frequency' => fake()->randomElement(['daily', 'weekly', 'monthly']),
             'due_date' => fake()->optional()->date(),
+            'realization_time' => fake()->optional()->time('H:i'),
             'completed_at' => null,
         ];
     }

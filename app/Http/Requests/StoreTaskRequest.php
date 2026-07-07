@@ -27,6 +27,8 @@ class StoreTaskRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'frequency' => ['required', 'string', Rule::in(['daily', 'weekly', 'monthly'])],
             'due_date' => ['nullable', 'date'],
+            'realization_time' => ['nullable', 'date_format:H:i'],
+
         ];
     }
 }

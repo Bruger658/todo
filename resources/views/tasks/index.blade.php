@@ -46,6 +46,11 @@
                             @error('due_date')<span class="text-sm text-rose-300">{{ $message }}</span>@enderror
                         </label>
                         <label class="flex flex-col gap-2 text-sm font-medium text-slate-200">
+                            Hora de realización
+                            <input type="time" name="realization_time" value="{{ old('realization_time') }}" class="rounded-2xl border border-white/10 bg-white px-4 py-3 text-slate-950 outline-none ring-cyan-300 transition focus:ring-4">
+                            @error('realization_time')<span class="text-sm text-rose-300">{{ $message }}</span>@enderror
+                        </label>
+                        <label class="flex flex-col gap-2 text-sm font-medium text-slate-200">
                             Detalle
                             <textarea name="description" rows="3" class="rounded-2xl border border-white/10 bg-white px-4 py-3 text-slate-950 outline-none ring-cyan-300 transition focus:ring-4" placeholder="Notas opcionales">{{ old('description') }}</textarea>
                             @error('description')<span class="text-sm text-rose-300">{{ $message }}</span>@enderror
@@ -56,7 +61,7 @@
             </section>
 
             @if (session('status'))
-                <div class="rounded-2xl border border-emerald-300/30 bg-emerald-400/10 px-5 py-4 text-emerald-100">{{ session('status') }}</div>
+                <div data-auto-dismiss="5000" class="rounded-2xl border border-emerald-300/30 bg-emerald-400/10 px-5 py-4 text-emerald-100 transition duration-300 ease-in-out">{{ session('status') }}</div>
             @endif
 
             <section class="grid gap-6 lg:grid-cols-3">

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['title', 'description', 'frequency', 'due_date'])]
+#[Fillable(['title', 'description', 'frequency', 'due_date', 'realization_time'])]
 class Task extends Model
 {
     /** @use HasFactory<TaskFactory> */
