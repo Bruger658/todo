@@ -21,11 +21,7 @@ class TaskController extends Controller
         return view('tasks.index', [
             'tasks' => $tasks,
             'tasksByFrequency' => $tasks->groupBy('frequency'),
-            'frequencies' => $this->frequencies(),
-            'upcomingReminderTasks' => $tasks
-                ->filter(fn (Task $task): bool => $task->shouldShowReminder(now()))
-                ->sortBy(fn (Task $task): ?int => $task->reminderAt(now())?->getTimestamp())
-                ->values(),
+            'frequencies' => $this->frequencies(),            
         ]);
     }
 

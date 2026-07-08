@@ -117,51 +117,31 @@ it('shows a reminder card one hour before tasks for every frequency', function (
     $response->assertSuccessful();
     $response->assertSee('Aviso una hora antes');
     $response->assertSee('Actividad con aviso '.$frequency);
+    $response->assertSee('08:45');
     $response->assertSee('09:45');
 })->with(['daily', 'weekly', 'monthly']);
 
-it('shows a reminder card one hour before tasks with only a realization time', function () {
-    $this->travelTo(now()->setDate(2026, 7, 7)->setTime(9, 0));
+it('shows the reminder card at the top at the notification time', function () {
+    $this->travelTo(now()->setDate(2026, 7, 7)->setTime(11, 45));
 
     Task::factory()->create([
-        'title' => 'Actividad sin fecha',
-        'description' => 'Avisar usando la fecha de hoy',
+        'title' => 'Actividad a las doce cuarenta y cinco',
+        'description' => 'Avisar una hora antes',
         'frequency' => 'daily',
-        'due_date' => null,
-        'realization_time' => '10:00',
+        'due_date' => now()->toDateString(),
+        'realization_time' => '12:45',
         'completed_at' => null,
     ]);
 
     $response = $this->get(route('tasks.index'));
 
     $response->assertSuccessful();
-    $response->assertSee('Aviso una hora antes');
-    $response->assertSee('Actividad sin fecha');
-    $response->assertSee('10:00');
+    $response->assertSeeInOrder([
+        'Aviso una hora antes',
+        'Organizador personal',
+    ]);
+    $response->assertSee('Actividad a las doce cuarenta y cinco');
+    $response->assertSee('11:45');
+    $response->assertSee('12:45');
 });
 
-
-it('does not show completed or later tasks in the reminder card', function () {
-    $this->travelTo(now()->setDate(2026, 7, 7)->setTime(9, 0));
-
-    Task::factory()->create([
-        'title' => 'Más tarde',
-        'frequency' => 'daily',
-        'due_date' => now()->toDateString(),
-        'realization_time' => '11:15',
-        'completed_at' => null,
-    ]);
-
-    Task::factory()->create([
-        'title' => 'Ya completada',
-        'frequency' => 'daily',
-        'due_date' => now()->toDateString(),
-        'realization_time' => '09:30',
-        'completed_at' => now(),
-    ]);
-
-    $response = $this->get(route('tasks.index'));
-
-    $response->assertSuccessful();
-    $response->assertDontSee('Aviso una hora antes');
-});

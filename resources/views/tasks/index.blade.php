@@ -11,6 +11,8 @@
     </head>
     <body class="min-h-screen bg-slate-950 text-slate-100 antialiased">
         <main class="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6 lg:px-8">
+            
+            
             <section class="grid gap-6 lg:grid-cols-[1fr_24rem]">
                 <div class="rounded-3xl border border-white/10 bg-white/10 p-8 shadow-2xl shadow-cyan-950/30 backdrop-blur">
                     <p class="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">Organizador personal</p>
@@ -58,44 +60,11 @@
                         <button class="rounded-2xl bg-cyan-300 px-5 py-3 font-bold text-slate-950 transition hover:bg-cyan-200">Agregar actividad</button>
                     </div>
                 </form>
-            </section>
+            </section>   
 
             @if (session('status'))
                 <div data-auto-dismiss="5000" class="rounded-2xl border border-emerald-300/30 bg-emerald-400/10 px-5 py-4 text-emerald-100 transition duration-300 ease-in-out">{{ session('status') }}</div>
-            @endif
-
-            @if ($upcomingReminderTasks->isNotEmpty())
-                <section class="rounded-3xl border border-amber-300/30 bg-amber-300/10 p-5 shadow-xl shadow-amber-950/20">
-                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <p class="text-sm font-semibold uppercase tracking-[0.25em] text-amber-200">Aviso una hora antes</p>
-                            <h2 class="mt-1 text-2xl font-bold text-white">Actividades por realizar pronto</h2>
-                        </div>
-                        <span class="w-fit rounded-full bg-amber-200 px-3 py-1 text-sm font-bold text-slate-950">{{ $upcomingReminderTasks->count() }} pendiente(s)</span>
-                    </div>
-
-                    <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                        @foreach ($upcomingReminderTasks as $reminderTask)
-                            <article class="rounded-2xl border border-amber-200/30 bg-slate-950/70 p-4">
-                                <div class="flex items-start justify-between gap-3">
-                                    <div class="min-w-0">
-                                        <p class="text-xs font-semibold uppercase tracking-wide text-amber-200">{{ $frequencies[$reminderTask->frequency] ?? $reminderTask->frequency }}</p>
-                                        <h3 class="mt-1 font-semibold text-white">{{ $reminderTask->title }}</h3>
-                                        @if ($reminderTask->description)
-                                            <p class="mt-2 text-sm text-slate-300">{{ $reminderTask->description }}</p>
-                                        @endif
-                                    </div>
-                                    <span class="rounded-full bg-amber-200 px-3 py-1 text-xs font-bold text-slate-950">Pronto</span>
-                                </div>
-                                <div class="mt-4 grid gap-2 text-sm text-amber-50 sm:grid-cols-2">
-                                    <p><span class="font-semibold text-amber-200">Fecha:</span> {{ $reminderTask->due_date?->format('d/m/Y') }}</p>
-                                    <p><span class="font-semibold text-amber-200">Hora:</span> {{ $reminderTask->reminderAt(now())?->format('H:i') }}</p>
-                                </div>
-                            </article>
-                        @endforeach
-                    </div>
-                </section>
-            @endif
+            @endif         
 
             <section class="grid gap-6 lg:grid-cols-3">
                 @foreach ($frequencies as $frequency => $label)
@@ -116,8 +85,8 @@
                                             @if ($task->due_date)
                                                 <p class="mt-3 text-xs font-medium uppercase tracking-wide text-cyan-200">Fecha: {{ $task->due_date->format('d/m/Y') }}</p>
                                             @endif
-                                             @if ($task->realization_time)
-                                                 <p class="mt-1 text-xs font-medium uppercase tracking-wide text-cyan-200">Hora: {{ $task->reminderAt(now())?->format('H:i') }}</p>
+                                            @if ($task->realization_time)
+                                                <p class="mt-1 text-xs font-medium uppercase tracking-wide text-cyan-200">Hora: {{ \Illuminate\Support\Str::of($task->realization_time)->substr(0, 5) }}</p>
                                             @endif
                                         </div>
                                         <form method="POST" action="{{ route('tasks.toggle', $task) }}">
@@ -165,96 +134,3 @@
 
 
 
-{{-- <!DOCTYPE html>
-<html lang="es">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Actividades</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="min-h-screen bg-slate-100 text-slate-900 antialiased">
-        <main class="mx-auto flex min-h-screen w-full max-w-4xl flex-col gap-8 px-6 py-10">
-            <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                <div class="flex flex-col gap-2">
-                    <p class="text-sm font-semibold uppercase tracking-wide text-indigo-600">Lista diaria</p>
-                    <h1 class="text-3xl font-bold tracking-tight">Actividades</h1>
-                    <p class="text-slate-600">Agrega tus actividades y define cada cuánto se repiten.</p>
-                </div>
-
-                @if (session('status'))
-                    <p class="mt-6 rounded-lg bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700">
-                        {{ session('status') }}
-                    </p>
-                @endif
-
-                <form method="POST" action="{{ route('tasks.store') }}" class="mt-6 grid gap-4">
-                    @csrf
-
-                    <div class="grid gap-2">
-                        <label for="title" class="text-sm font-medium text-slate-700">Título</label>
-                        <input id="title" name="title" value="{{ old('title') }}" class="rounded-lg border border-slate-300 px-3 py-2 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200" required>
-                        @error('title')
-                            <p class="text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="grid gap-2">
-                        <label for="description" class="text-sm font-medium text-slate-700">Descripción</label>
-                        <textarea id="description" name="description" rows="3" class="rounded-lg border border-slate-300 px-3 py-2 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200">{{ old('description') }}</textarea>
-                        @error('description')
-                            <p class="text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div class="grid gap-2">
-                        <label for="frequency" class="text-sm font-medium text-slate-700">Frecuencia</label>
-                        <select id="frequency" name="frequency" class="rounded-lg border border-slate-300 px-3 py-2 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200" required>
-                            <option value="daily" @selected(old('frequency', 'daily') === 'daily')>Diaria</option>
-                            <option value="weekly" @selected(old('frequency') === 'weekly')>Semanal</option>
-                            <option value="monthly" @selected(old('frequency') === 'monthly')>Mensual</option>
-                        </select>
-                        @error('frequency')
-                            <p class="text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <button type="submit" class="inline-flex w-fit items-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        Agregar actividad
-                    </button>
-                </form>
-            </section>
-
-            <section class="grid gap-4">
-                @forelse ($tasks as $task)
-                    <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
-                        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                            <div class="grid gap-2">
-                                <div class="flex flex-wrap items-center gap-3">
-                                    <h2 class="text-xl font-semibold">{{ $task->title }}</h2>
-                                    <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-700">
-                                        {{ ['daily' => 'Diaria', 'weekly' => 'Semanal', 'monthly' => 'Mensual'][$task->frequency] ?? $task->frequency }}
-                                    </span>
-                                </div>
-
-                                @if ($task->description)
-                                    <p class="text-slate-600">{{ $task->description }}</p>
-                                @endif
-                            </div>
-
-                            <form method="POST" action="{{ route('tasks.destroy', $task) }}">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="rounded-lg px-3 py-2 text-sm font-semibold text-red-600 transition hover:bg-red-50">
-                                    Eliminar
-                                </button>
-                            </form>
-                        </div>
-                    </article>
-                @empty
-                    <p class="rounded-2xl bg-white p-6 text-center text-slate-600 shadow-sm ring-1 ring-slate-200">Todavía no hay actividades.</p>
-                @endforelse
-            </section>
-        </main>
-    </body>
-</html> --}}
