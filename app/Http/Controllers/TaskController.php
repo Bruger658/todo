@@ -13,8 +13,12 @@ class TaskController extends Controller
     public function index(): View
     {   
         $tasks = Task::query()
+            ->orderByRaw("case frequency when 'daily' then 1 when 'weekly' then 2 when 'monthly' then 3 else 4 end")
             ->orderByRaw('completed_at is not null')
+            ->orderByRaw('due_date is null')
             ->orderBy('due_date')
+            ->orderByRaw('realization_time is null')
+            ->orderBy('realization_time')
             ->latest()
             ->get();
 

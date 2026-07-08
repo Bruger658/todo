@@ -43,6 +43,46 @@ it('shows tasks ordered with incomplete tasks first', function () {
     $response->assertSeeInOrder([$pendingTask->title, $completedTask->title]);
 });
 
+it('shows task groups by frequency and nearest schedule first', function () {
+    $weeklyTask = Task::factory()->create([
+        'title' => 'Semanal cercana',
+        'frequency' => 'weekly',
+        'due_date' => now()->addDay()->toDateString(),
+        'realization_time' => '09:00',
+    ]);
+    $monthlyTask = Task::factory()->create([
+        'title' => 'Mensual cercana',
+        'frequency' => 'monthly',
+        'due_date' => now()->addDay()->toDateString(),
+        'realization_time' => '09:00',
+    ]);
+    $laterDailyTask = Task::factory()->create([
+        'title' => 'Diaria tarde',
+        'frequency' => 'daily',
+        'due_date' => now()->addDays(2)->toDateString(),
+        'realization_time' => '18:00',
+    ]);
+    $nearerDailyTask = Task::factory()->create([
+        'title' => 'Diaria cercana',
+        'frequency' => 'daily',
+        'due_date' => now()->addDay()->toDateString(),
+        'realization_time' => '08:00',
+    ]);
+
+    $response = $this->get(route('tasks.index'));
+
+    $response->assertSuccessful();
+    $response->assertSeeInOrder([
+        'Diarias',
+        $nearerDailyTask->title,
+        $laterDailyTask->title,
+        'Semanales',
+        $weeklyTask->title,
+        'Mensuales',
+        $monthlyTask->title,
+    ]);
+});
+
 it('shows the realization time field when editing a task', function () {
     $task = Task::factory()->create([
         'frequency' => 'daily',
@@ -56,9 +96,6 @@ it('shows the realization time field when editing a task', function () {
     $response->assertSee('name="realization_time"', false);
     $response->assertSee('value="08:30"', false);
 });
-
-
-
 
 it('updates a task', function () {
     $task = Task::factory()->create([
