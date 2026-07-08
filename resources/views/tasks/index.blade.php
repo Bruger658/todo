@@ -33,15 +33,21 @@
                                 <p class="mt-2 text-xs font-medium uppercase tracking-wide text-cyan-200">Más próximas primero</p>
                                 <div class="mt-5 flex flex-col gap-4">
                                     @forelse ($tasksByFrequency->get($frequency, collect()) as $task)
-                                        <article class="rounded-2xl border border-white/10 bg-slate-950/70 p-4 {{ $task->isCompleted() ? 'opacity-60' : '' }}">
+                                         @php($isOverdue = $task->isOverdue())
+                                        <article class="rounded-2xl border p-4 {{ $isOverdue ? 'border-rose-400/40 bg-rose-500/10 shadow-lg shadow-rose-950/20' : 'border-white/10 bg-slate-950/70' }} {{ $task->isCompleted() ? 'opacity-60' : '' }}">
                                             <div class="flex items-start justify-between gap-3">
                                                 <div class="min-w-0">
-                                                    <h3 class="font-semibold text-white {{ $task->isCompleted() ? 'line-through' : '' }}">{{ $task->title }}</h3>
+                                                    <div class="flex flex-wrap items-center gap-2">
+                                                        <h3 class="font-semibold {{ $isOverdue ? 'text-rose-100' : 'text-white' }} {{ $task->isCompleted() ? 'line-through' : '' }}">{{ $task->title }}</h3>
+                                                        @if ($isOverdue)
+                                                            <span class="rounded-full border border-rose-300/30 bg-rose-400/20 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-rose-100">Pendiente</span>
+                                                        @endif
+                                                    </div>
                                                     @if ($task->description)
-                                                        <p class="mt-2 text-sm text-slate-300">{{ $task->description }}</p>
+                                                        <p class="mt-3 text-xs font-medium uppercase tracking-wide {{ $isOverdue ? 'text-rose-200' : 'text-cyan-200' }}">Fecha: {{ $task->due_date->format('d/m/Y') }}</p>
                                                     @endif
                                                     @if ($task->due_date)
-                                                        <p class="mt-3 text-xs font-medium uppercase tracking-wide text-cyan-200">Fecha: {{ $task->due_date->format('d/m/Y') }}</p>
+                                                        <p class="mt-1 text-xs font-medium uppercase tracking-wide {{ $isOverdue ? 'text-rose-200' : 'text-cyan-200' }}">Hora: {{ \Illuminate\Support\Str::of($task->realization_time)->substr(0, 5) }}</p>
                                                     @endif
                                                     @if ($task->realization_time)
                                                         <p class="mt-1 text-xs font-medium uppercase tracking-wide text-cyan-200">Hora: {{ \Illuminate\Support\Str::of($task->realization_time)->substr(0, 5) }}</p>

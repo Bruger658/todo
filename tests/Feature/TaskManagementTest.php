@@ -83,6 +83,43 @@ it('shows task groups by frequency and nearest schedule first', function () {
     ]);
 });
 
+it('marks overdue pending tasks in red automatically', function () {
+    $this->travelTo('2026-07-08 10:00:00');
+
+    $overdueTask = Task::factory()->create([
+        'title' => 'Actividad atrasada',
+        'frequency' => 'daily',
+        'due_date' => '2026-07-08',
+        'realization_time' => '09:00',
+        'completed_at' => null,
+    ]);
+
+    $response = $this->get(route('tasks.index'));
+
+    $response->assertSuccessful();
+    $response->assertSee($overdueTask->title);
+    $response->assertSee('Pendiente');
+    $response->assertSee('border-rose-400/40', false);
+});
+
+it('does not mark completed overdue tasks as pending', function () {
+    $this->travelTo('2026-07-08 10:00:00');
+
+    Task::factory()->create([
+        'title' => 'Actividad completada atrasada',
+        'frequency' => 'daily',
+        'due_date' => '2026-07-08',
+        'realization_time' => '09:00',
+        'completed_at' => now(),
+    ]);
+
+    $response = $this->get(route('tasks.index'));
+
+    $response->assertSuccessful();
+    $response->assertDontSee('Pendiente');
+    $response->assertDontSee('border-rose-400/40', false);
+});
+
 it('shows the realization time field when editing a task', function () {
     $task = Task::factory()->create([
         'frequency' => 'daily',
