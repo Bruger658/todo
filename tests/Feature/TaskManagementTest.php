@@ -102,6 +102,31 @@ it('marks overdue pending tasks in red automatically', function () {
     $response->assertSee('border-rose-400/40', false);
 });
 
+it('keeps tasks pending until their realization time passes', function () {
+    $previousTimezone = date_default_timezone_get();
+
+    config(['app.timezone' => 'America/Argentina/Buenos_Aires']);
+    date_default_timezone_set(config('app.timezone'));
+    $this->travelTo('2026-07-08 15:30:00');
+
+    $task = Task::factory()->create([
+        'title' => 'Actividad de las cinco',
+        'frequency' => 'daily',
+        'due_date' => '2026-07-08',
+        'realization_time' => '17:00',
+        'completed_at' => null,
+    ]);
+
+    $response = $this->get(route('tasks.index'));
+
+    $response->assertSuccessful();
+    $response->assertSee($task->title);
+    $response->assertDontSee('Pendiente');
+    $response->assertDontSee('border-rose-400/40', false);
+
+    date_default_timezone_set($previousTimezone);
+});
+
 it('does not mark completed overdue tasks as pending', function () {
     $this->travelTo('2026-07-08 10:00:00');
 
