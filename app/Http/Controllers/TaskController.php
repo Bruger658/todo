@@ -24,7 +24,7 @@ class TaskController extends Controller
             'frequencies' => $this->frequencies(),
             'upcomingReminderTasks' => $tasks
                 ->filter(fn (Task $task): bool => $task->shouldShowReminder(now()))
-                ->sortBy(fn (Task $task): ?int => $task->reminderAt()?->getTimestamp())
+                ->sortBy(fn (Task $task): ?int => $task->reminderAt(now())?->getTimestamp())
                 ->values(),
         ]);
     }

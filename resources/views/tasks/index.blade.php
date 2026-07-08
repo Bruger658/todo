@@ -89,7 +89,7 @@
                                 </div>
                                 <div class="mt-4 grid gap-2 text-sm text-amber-50 sm:grid-cols-2">
                                     <p><span class="font-semibold text-amber-200">Fecha:</span> {{ $reminderTask->due_date?->format('d/m/Y') }}</p>
-                                    <p><span class="font-semibold text-amber-200">Hora:</span> {{ $reminderTask->reminderAt()?->format('H:i') }}</p>
+                                    <p><span class="font-semibold text-amber-200">Hora:</span> {{ $reminderTask->reminderAt(now())?->format('H:i') }}</p>
                                 </div>
                             </article>
                         @endforeach
@@ -117,7 +117,7 @@
                                                 <p class="mt-3 text-xs font-medium uppercase tracking-wide text-cyan-200">Fecha: {{ $task->due_date->format('d/m/Y') }}</p>
                                             @endif
                                              @if ($task->realization_time)
-                                                <p class="mt-1 text-xs font-medium uppercase tracking-wide text-cyan-200">Hora: {{ $task->reminderAt()?->format('H:i') }}</p>
+                                                 <p class="mt-1 text-xs font-medium uppercase tracking-wide text-cyan-200">Hora: {{ $task->reminderAt(now())?->format('H:i') }}</p>
                                             @endif
                                         </div>
                                         <form method="POST" action="{{ route('tasks.toggle', $task) }}">

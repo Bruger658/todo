@@ -99,6 +99,7 @@ it('requires a valid frequency when creating a task', function () {
     $response->assertSessionHasErrors('frequency');
 
     expect(Task::query()->count())->toBe(0);
+});    
 it('shows a reminder card one hour before tasks for every frequency', function (string $frequency) {
     $this->travelTo(now()->setDate(2026, 7, 7)->setTime(9, 0));
 
@@ -118,6 +119,27 @@ it('shows a reminder card one hour before tasks for every frequency', function (
     $response->assertSee('Actividad con aviso '.$frequency);
     $response->assertSee('09:45');
 })->with(['daily', 'weekly', 'monthly']);
+
+it('shows a reminder card one hour before tasks with only a realization time', function () {
+    $this->travelTo(now()->setDate(2026, 7, 7)->setTime(9, 0));
+
+    Task::factory()->create([
+        'title' => 'Actividad sin fecha',
+        'description' => 'Avisar usando la fecha de hoy',
+        'frequency' => 'daily',
+        'due_date' => null,
+        'realization_time' => '10:00',
+        'completed_at' => null,
+    ]);
+
+    $response = $this->get(route('tasks.index'));
+
+    $response->assertSuccessful();
+    $response->assertSee('Aviso una hora antes');
+    $response->assertSee('Actividad sin fecha');
+    $response->assertSee('10:00');
+});
+
 
 it('does not show completed or later tasks in the reminder card', function () {
     $this->travelTo(now()->setDate(2026, 7, 7)->setTime(9, 0));

@@ -25,6 +25,7 @@ class Task extends Model
         return [
             'due_date' => 'date',
             'completed_at' => 'datetime',
+            'realization_time' => 'string',
         ];
     }
 
@@ -32,18 +33,18 @@ class Task extends Model
     {
         return $this->completed_at !== null;
     }
- public function reminderAt(): ?Carbon
+    public function reminderAt(?Carbon $now = null): ?Carbon
     {
-        if ($this->due_date === null || $this->realization_time === null) {
+        if ($this->realization_time === null) {
             return null;
         }
 
-        return $this->due_date->copy()->setTimeFromTimeString($this->realization_time);
+        return ($this->due_date ?? $now ?? now())->copy()->setTimeFromTimeString($this->realization_time);
     }
 
     public function shouldShowReminder(Carbon $now): bool
     {
-        $reminderAt = $this->reminderAt();
+        $reminderAt = $this->reminderAt($now);
 
         if ($this->isCompleted() || $reminderAt === null) {
             return false;
