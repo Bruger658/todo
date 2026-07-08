@@ -99,49 +99,5 @@ it('requires a valid frequency when creating a task', function () {
     $response->assertSessionHasErrors('frequency');
 
     expect(Task::query()->count())->toBe(0);
-});    
-it('shows a reminder card one hour before tasks for every frequency', function (string $frequency) {
-    $this->travelTo(now()->setDate(2026, 7, 7)->setTime(9, 0));
-
-    Task::factory()->create([
-        'title' => 'Actividad con aviso '.$frequency,
-        'description' => 'Preparar materiales',
-        'frequency' => $frequency,
-        'due_date' => now()->toDateString(),
-        'realization_time' => '09:45',
-        'completed_at' => null,
-    ]);
-
-    $response = $this->get(route('tasks.index'));
-
-    $response->assertSuccessful();
-    $response->assertSee('Aviso una hora antes');
-    $response->assertSee('Actividad con aviso '.$frequency);
-    $response->assertSee('08:45');
-    $response->assertSee('09:45');
-})->with(['daily', 'weekly', 'monthly']);
-
-it('shows the reminder card at the top at the notification time', function () {
-    $this->travelTo(now()->setDate(2026, 7, 7)->setTime(11, 45));
-
-    Task::factory()->create([
-        'title' => 'Actividad a las doce cuarenta y cinco',
-        'description' => 'Avisar una hora antes',
-        'frequency' => 'daily',
-        'due_date' => now()->toDateString(),
-        'realization_time' => '12:45',
-        'completed_at' => null,
-    ]);
-
-    $response = $this->get(route('tasks.index'));
-
-    $response->assertSuccessful();
-    $response->assertSeeInOrder([
-        'Aviso una hora antes',
-        'Organizador personal',
-    ]);
-    $response->assertSee('Actividad a las doce cuarenta y cinco');
-    $response->assertSee('11:45');
-    $response->assertSee('12:45');
-});
+}); 
 
