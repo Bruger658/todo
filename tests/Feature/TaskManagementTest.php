@@ -23,7 +23,7 @@ it('creates a task with a frequency', function () {
     ]);
 });
 
-it('shows tasks ordered with incomplete tasks first', function () {
+it('renders task cards in calendar order with incomplete tasks first', function () {
     $completedTask = Task::factory()->create([
         'title' => 'Completada',
         'frequency' => 'daily',
@@ -43,7 +43,7 @@ it('shows tasks ordered with incomplete tasks first', function () {
     $response->assertSeeInOrder([$pendingTask->title, $completedTask->title]);
 });
 
-it('shows task groups by frequency and nearest schedule first', function () {
+it('shows calendar activity buttons grouped by frequency and nearest schedule first', function () {
     $weeklyTask = Task::factory()->create([
         'title' => 'Semanal cercana',
         'frequency' => 'weekly',
@@ -81,6 +81,7 @@ it('shows task groups by frequency and nearest schedule first', function () {
         'Mensuales',
         $monthlyTask->title,
     ]);
+    $response->assertSee('data-task-card-open="task-card-'.$nearerDailyTask->id.'"', false);
 });
 
 it('shows current month calendar with recurring activity markers', function () {
@@ -111,9 +112,31 @@ it('shows current month calendar with recurring activity markers', function () {
     $response->assertSee('data-calendar-marker="daily"', false);
     $response->assertSee('data-calendar-marker="weekly"', false);
     $response->assertSee('data-calendar-marker="monthly"', false);
+    $response->assertSee('data-task-card-open="task-card-'.Task::where('title', 'Rutina diaria')->value('id').'"', false);
     $response->assertSee('Rutina diaria');
     $response->assertSee('Revisión semanal');
     $response->assertSee('Pago mensual');
+});
+
+it('navigates the calendar to previous and next months', function () {
+    $this->travelTo('2026-07-13 10:00:00');
+
+    Task::factory()->create([
+        'title' => 'Actividad de agosto',
+        'frequency' => 'monthly',
+        'due_date' => '2026-08-05',
+    ]);
+
+    $response = $this->get(route('tasks.index', ['month' => '2026-08']));
+
+    $response->assertSuccessful();
+    $response->assertSee('agosto 2026');
+    $response->assertSee('aria-label="Ver mes anterior"', false);
+    $response->assertSee('month=2026-07', false);
+    $response->assertSee('aria-label="Ver mes siguiente"', false);
+    $response->assertSee('month=2026-09', false);
+    $response->assertSee('data-calendar-date="2026-08-05"', false);
+    $response->assertSee('Actividad de agosto');
 });
 
 it('shows the due date before the realization time when a task has no description', function () {
@@ -175,7 +198,6 @@ it('keeps tasks pending until their realization time passes', function () {
     $response->assertSee($task->title);
     $response->assertDontSee('Pendiente');
     $response->assertDontSee('border-rose-400/40', false);
-
     date_default_timezone_set($previousTimezone);
 });
 
@@ -197,7 +219,7 @@ it('does not mark completed overdue tasks as pending', function () {
     $response->assertDontSee('border-rose-400/40', false);
 });
 
-it('shows the realization time field when editing a task', function () {
+it('shows the realization time field when editing a task from its calendar card', function () {
     $task = Task::factory()->create([
         'frequency' => 'daily',
         'realization_time' => '08:30',
@@ -257,14 +279,16 @@ it('asks whether to delete or keep a pending task when marking it done', functio
         'title' => 'Comprar leche',
         'frequency' => 'daily',
         'completed_at' => null,
+        'due_date' => now()->toDateString(),
     ]);
 
     $response = $this->get(route('tasks.index'));
 
     $response->assertSuccessful();
+    $response->assertSee('data-task-card-open="task-card-'.$task->id.'"', false);
     $response->assertSee('data-completion-choice-open="completion-choice-'.$task->id.'"', false);
     $response->assertSee('¿Qué querés hacer con “Comprar leche”?');
-    $response->assertSee('Borrar');
+    $response->assertSee('Eliminar actividad');
     $response->assertSee('Guardar hecha');
 });
 

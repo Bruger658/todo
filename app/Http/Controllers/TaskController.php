@@ -6,13 +6,14 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class TaskController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {   
         $tasks = Task::query()
             ->orderByRaw("case frequency when 'daily' then 1 when 'weekly' then 2 when 'monthly' then 3 else 4 end")
@@ -28,7 +29,7 @@ class TaskController extends Controller
             'tasks' => $tasks,
             'tasksByFrequency' => $tasks->groupBy('frequency'),
             'frequencies' => $this->frequencies(),
-            'calendar' => $this->calendar($tasks),            
+            'calendar' => $this->calendar($tasks, $request->string('month')->toString()),          
         ]);
     }
 
@@ -79,14 +80,17 @@ class TaskController extends Controller
      * @param  Collection<int, Task>  $tasks
      * @return array{
      *     monthLabel: string,
+     *     previousMonth: string,
+     *     currentMonth: string,
+     *     nextMonth: string,
      *     weekdays: array<int, string>,
-     *     weeks: array<int, array<int, array{date: Carbon, isCurrentMonth: bool, isToday: bool, markers: array<string, array<int, string>>}>>
+     *     weeks: array<int, array<int, array{date: Carbon, isCurrentMonth: bool, isToday: bool, markers: array<string, array<int, Task>>}>>
      * }
      */
-    private function calendar(Collection $tasks): array
+    private function calendar(Collection $tasks, ?string $selectedMonth): array
     {
-        $monthStart = now()->startOfMonth();
-        $monthEnd = now()->endOfMonth();
+         $monthStart = $this->calendarMonthStart($selectedMonth);
+        $monthEnd = $monthStart->copy()->endOfMonth();
         $calendarStart = $monthStart->copy()->startOfWeek(Carbon::MONDAY);
         $calendarEnd = $monthEnd->copy()->endOfWeek(Carbon::SUNDAY);
         $days = [];
@@ -104,14 +108,32 @@ class TaskController extends Controller
 
         return [
             'monthLabel' => $this->spanishMonthLabel($monthStart),
+            'previousMonth' => $monthStart->copy()->subMonthNoOverflow()->format('Y-m'),
+            'currentMonth' => now()->format('Y-m'),
+            'nextMonth' => $monthStart->copy()->addMonthNoOverflow()->format('Y-m'),
             'weekdays' => ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
             'weeks' => array_chunk($days, 7),
         ];
     }
 
+    private function calendarMonthStart(?string $selectedMonth): Carbon
+    {
+        if ($selectedMonth === null || $selectedMonth === '' || preg_match('/^\d{4}-\d{2}$/', $selectedMonth) !== 1) {
+            return now()->startOfMonth();
+        }
+
+        $month = Carbon::createFromFormat('!Y-m', $selectedMonth);
+
+        if ($month === false || $month->format('Y-m') !== $selectedMonth) {
+            return now()->startOfMonth();
+        }
+
+        return $month->startOfMonth();
+    }
+
     /**
      * @param  Collection<int, Task>  $tasks
-     * @return array<string, array<int, string>>
+     * @return array<string, array<int, Task>>
      */
     private function markersForDate(Collection $tasks, Carbon $date, Carbon $monthStart, Carbon $monthEnd): array
     {
@@ -127,7 +149,7 @@ class TaskController extends Controller
             }
 
             if ($this->taskOccursOnDate($task, $date)) {
-                $markers[$task->frequency][] = $task->title;
+                 $markers[$task->frequency][] = $task;
             }
         }
 
