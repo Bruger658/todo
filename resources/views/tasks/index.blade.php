@@ -33,7 +33,9 @@
                                 <p class="mt-2 text-xs font-medium uppercase tracking-wide text-cyan-200">Ordenadas de mas viejas a mas nuevas</p>
                                 <div class="mt-5 flex flex-col gap-4">
                                     @forelse ($tasksByFrequency->get($frequency, collect()) as $task)
-                                         @php($isOverdue = $task->isOverdue())
+                                        @php
+                                            $isOverdue = $task->isOverdue();
+                                        @endphp
                                         <article class="rounded-2xl border p-4 {{ $isOverdue ? 'border-rose-400/40 bg-rose-500/10 shadow-lg shadow-rose-950/20' : 'border-white/10 bg-slate-950/70' }} {{ $task->isCompleted() ? 'opacity-60' : '' }}">
                                             <div class="flex items-start justify-between gap-3">
                                                 <div class="min-w-0">
@@ -179,7 +181,9 @@
                                             @if ($day['markers'] !== [])
                                                 <div class="mt-3 flex flex-col gap-1.5">
                                                     @foreach ($day['markers'] as $frequency => $titles)
-                                                        @php($style = $calendarMarkerStyles[$frequency])
+                                                        @php
+                                                            $style = $calendarMarkerStyles[$frequency];
+                                                        @endphp
                                                         <div class="rounded-xl bg-white/5 px-2 py-1" data-calendar-marker="{{ $frequency }}">
                                                             <div class="flex items-center gap-1.5">
                                                                 <span class="size-2 rounded-full {{ $style['dot'] }}"></span>
