@@ -32,18 +32,18 @@
                     @endphp
 
                     <section class="mt-8 rounded-3xl border border-white/10 bg-slate-950/50 p-5 shadow-xl shadow-slate-950/20">
-                        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                        <div class="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
                             <div>
                                 <p class="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-300">Calendario de actividades</p>
-                                <div class="mt-2 flex flex-wrap items-center gap-3">
+                                <div class="mt-4 flex flex-wrap items-center gap-4">
                                     <a href="{{ route('tasks.index', ['month' => $calendar['previousMonth']]) }}" class="inline-flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl font-bold text-cyan-100 transition hover:bg-cyan-300/10" aria-label="Ver mes anterior">‹</a>
                                     <h2 class="text-2xl font-bold capitalize text-white">{{ $calendar['monthLabel'] }}</h2>
                                     <a href="{{ route('tasks.index', ['month' => $calendar['nextMonth']]) }}" class="inline-flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl font-bold text-cyan-100 transition hover:bg-cyan-300/10" aria-label="Ver mes siguiente">›</a>
                                     <a href="{{ route('tasks.index', ['month' => $calendar['currentMonth']]) }}" class="rounded-full border border-white/10 px-3 py-1 text-xs font-bold uppercase tracking-wide text-slate-300 transition hover:bg-white/10">Hoy</a>
                                 </div>
-                                <p class="mt-2 text-sm text-slate-300">Las actividades diarias, semanales y mensuales se marcan con colores distintos según su repetición.</p>
+                                <p class="mt-4 max-w-2xl text-sm leading-6 text-slate-300">Las actividades diarias, semanales y mensuales se marcan con colores distintos según su repetición.</p>
                             </div>
-                            <div class="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-wide">
+                            <div class="flex flex-wrap gap-x-6 gap-y-3 text-xs font-semibold uppercase tracking-wide">
                                 @foreach ($calendarMarkerStyles as $style)
                                     <span class="inline-flex items-center gap-2 text-slate-300">
                                         <span class="size-2.5 rounded-full {{ $style['dot'] }}"></span>
@@ -53,15 +53,15 @@
                             </div>
                         </div>
 
-                        <div class="mt-6 grid grid-cols-7 gap-2 text-center text-xs font-bold uppercase tracking-wide text-slate-400">
+                        <div class="mt-8 grid grid-cols-7 gap-3 text-center text-xs font-bold uppercase tracking-wide text-slate-400">
                             @foreach ($calendar['weekdays'] as $weekday)
                                 <div>{{ $weekday }}</div>
                             @endforeach
                         </div>
 
-                        <div class="mt-2 grid gap-2">
+                        <div class="mt-4 grid gap-3">
                             @foreach ($calendar['weeks'] as $week)
-                                <div class="grid grid-cols-7 gap-2">
+                                <div class="grid grid-cols-7 gap-3">
                                     @foreach ($week as $day)
                                         <div
                                             class="min-h-28 rounded-2xl border p-2 text-left {{ $day['isCurrentMonth'] ? 'border-white/10 bg-slate-900/80' : 'border-white/5 bg-slate-950/30 text-slate-600' }} {{ $day['isToday'] ? 'ring-2 ring-cyan-300/70' : '' }}"

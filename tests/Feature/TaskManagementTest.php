@@ -255,6 +255,32 @@ it('shows the realization time field when editing a task from its calendar card'
     $response->assertSee('value="08:30"', false);
 });
 
+it('keeps the selected calendar month after editing a monthly task', function () {
+    $task = Task::factory()->create([
+        'title' => 'Pago mensual',
+        'frequency' => 'monthly',
+        'due_date' => '2026-08-05',
+    ]);
+
+    $response = $this->from(route('tasks.index', ['month' => '2026-08']))->put(route('tasks.update', $task), [
+        'title' => 'Pago mensual actualizado',
+        'description' => null,
+        'frequency' => 'monthly',
+        'due_date' => '2026-08-10',
+        'duration_days' => null,
+        'realization_time' => null,
+    ]);
+
+    $response->assertRedirect(route('tasks.index', ['month' => '2026-08']));
+
+    $this->assertDatabaseHas('tasks', [
+        'id' => $task->id,
+        'title' => 'Pago mensual actualizado',
+        'frequency' => 'monthly',
+        'due_date' => '2026-08-10',
+    ]);
+});
+
 it('updates a task', function () {
     $task = Task::factory()->create([
         'title' => 'Original',

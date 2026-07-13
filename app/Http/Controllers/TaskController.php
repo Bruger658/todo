@@ -37,14 +37,14 @@ class TaskController extends Controller
     {
         Task::query()->create($request->validated());
 
-        return redirect()->route('tasks.index')->with('status', 'Actividad agregada correctamente.');
+        return $this->redirectToPreviousIndex()->with('status', 'Actividad agregada correctamente.');
     }
 
     public function update(UpdateTaskRequest $request, Task $task): RedirectResponse
     {
         $task->update($request->validated());
 
-        return redirect()->route('tasks.index')->with('status', 'Actividad actualizada correctamente.');
+        return $this->redirectToPreviousIndex()->with('status', 'Actividad actualizada correctamente.');
     }
 
     public function toggle(Task $task): RedirectResponse
@@ -53,14 +53,19 @@ class TaskController extends Controller
             'completed_at' => $task->isCompleted() ? null : now(),
         ])->save();
 
-        return redirect()->route('tasks.index')->with('status', 'Estado de la actividad actualizado.');
+         return $this->redirectToPreviousIndex()->with('status', 'Estado de la actividad actualizado.');
     }
 
     public function destroy(Task $task): RedirectResponse
     {
         $task->delete();
 
-        return redirect()->route('tasks.index')->with('status', 'Actividad eliminada correctamente.');
+          return $this->redirectToPreviousIndex()->with('status', 'Actividad eliminada correctamente.');
+    }
+
+    private function redirectToPreviousIndex(): RedirectResponse
+    {
+        return redirect()->to(url()->previous(route('tasks.index')));
     }
 
     /**
