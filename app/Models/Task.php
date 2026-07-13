@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
-#[Fillable(['title', 'description', 'frequency', 'due_date', 'realization_time'])]
+#[Fillable(['title', 'description', 'frequency', 'due_date', 'duration_days', 'realization_time'])]
 class Task extends Model
 {
     /** @use HasFactory<TaskFactory> */
@@ -23,6 +23,7 @@ class Task extends Model
     {
         return [
             'due_date' => 'date',
+            'duration_days' => 'integer',
             'completed_at' => 'datetime',
             'realization_time' => 'string',
         ];

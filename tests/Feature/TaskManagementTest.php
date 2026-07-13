@@ -11,6 +11,7 @@ it('creates a task with a frequency', function () {
         'description' => 'Todos los días',
         'frequency' => 'daily',
         'realization_time' => '08:30',
+        'duration_days' => 3,
     ]);
 
     $response->assertRedirect(route('tasks.index'));
@@ -20,6 +21,7 @@ it('creates a task with a frequency', function () {
         'description' => 'Todos los días',
         'frequency' => 'daily',
         'realization_time' => '08:30',
+        'duration_days' => 3,
     ]);
 });
 
@@ -91,6 +93,7 @@ it('shows current month calendar with recurring activity markers', function () {
         'title' => 'Rutina diaria',
         'frequency' => 'daily',
         'due_date' => '2026-07-10',
+        'duration_days' => 4,
     ]);
     Task::factory()->create([
         'title' => 'Revisión semanal',
@@ -116,6 +119,25 @@ it('shows current month calendar with recurring activity markers', function () {
     $response->assertSee('Rutina diaria');
     $response->assertSee('Revisión semanal');
     $response->assertSee('Pago mensual');
+});
+
+it('limits daily activity markers to the selected amount of days', function () {
+    $this->travelTo('2026-07-13 10:00:00');
+
+    Task::factory()->create([
+        'title' => 'Rutina acotada',
+        'frequency' => 'daily',
+        'due_date' => '2026-07-10',
+        'duration_days' => 2,
+    ]);
+
+    $response = $this->get(route('tasks.index'));
+
+    $response->assertSuccessful();
+    $response->assertSee('Duración:</span> 2 día(s)', false);
+    $response->assertSee('data-calendar-task-date="2026-07-10"', false);
+    $response->assertSee('data-calendar-task-date="2026-07-11"', false);
+    $response->assertDontSee('data-calendar-task-date="2026-07-12"', false);
 });
 
 it('navigates the calendar to previous and next months', function () {

@@ -91,6 +91,7 @@
                                                                         type="button"
                                                                         class="truncate rounded-lg px-2 py-1 text-left text-xs text-slate-200 transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-300"
                                                                         title="{{ $task->title }}"
+                                                                        data-calendar-task-date="{{ $day['date']->toDateString() }}"
                                                                         data-task-card-open="task-card-{{ $task->id }}"
                                                                     >
                                                                         {{ $task->title }}
@@ -129,6 +130,9 @@
                                     <p><span class="font-semibold text-slate-100">Frecuencia:</span> {{ $frequencies[$task->frequency] }}</p>
                                     @if ($task->due_date)
                                         <p><span class="font-semibold text-slate-100">Fecha:</span> {{ $task->due_date->format('d/m/Y') }}</p>
+                                    @endif
+                                    @if ($task->frequency === 'daily')
+                                        <p><span class="font-semibold text-slate-100">Duración:</span> {{ $task->duration_days ?? 1 }} día(s)</p>
                                     @endif
                                     @if ($task->realization_time)
                                         <p><span class="font-semibold text-slate-100">Hora:</span> {{ \Illuminate\Support\Str::of($task->realization_time)->substr(0, 5) }}</p>
@@ -172,6 +176,7 @@
                                             @endforeach
                                         </select>
                                         <input type="date" name="due_date" value="{{ old('due_date', $task->due_date?->format('Y-m-d')) }}" class="rounded-xl bg-white px-3 py-2 text-sm text-slate-950">
+                                        <input type="number" name="duration_days" min="1" max="366" value="{{ old('duration_days', $task->duration_days ?? 1) }}" class="rounded-xl bg-white px-3 py-2 text-sm text-slate-950" placeholder="Días si es diaria">
                                         <input type="time" name="realization_time" value="{{ old('realization_time', $task->realization_time ? \Illuminate\Support\Str::of($task->realization_time)->substr(0, 5) : null) }}" class="rounded-xl bg-white px-3 py-2 text-sm text-slate-950">
                                         <button class="rounded-xl bg-cyan-100 px-3 py-2 text-sm font-bold text-slate-950 transition hover:bg-cyan-200">Guardar cambios</button>
                                     </form>
@@ -230,6 +235,12 @@
                             Fecha objetivo
                             <input type="date" name="due_date" value="{{ old('due_date') }}" class="rounded-2xl border border-white/10 bg-white px-4 py-3 text-slate-950 outline-none ring-cyan-300 transition focus:ring-4">
                             @error('due_date')<span class="text-sm text-rose-300">{{ $message }}</span>@enderror
+                        </label>
+                        <label class="flex flex-col gap-2 text-sm font-medium text-slate-200">
+                            Cantidad de días (solo diarias)
+                            <input type="number" name="duration_days" min="1" max="366" value="{{ old('duration_days', 1) }}" class="rounded-2xl border border-white/10 bg-white px-4 py-3 text-slate-950 outline-none ring-cyan-300 transition focus:ring-4" placeholder="1">
+                            <span class="text-xs text-slate-400">Una actividad diaria se muestra desde la fecha objetivo durante esta cantidad de días.</span>
+                            @error('duration_days')<span class="text-sm text-rose-300">{{ $message }}</span>@enderror
                         </label>
                         <label class="flex flex-col gap-2 text-sm font-medium text-slate-200">
                             Hora de realización

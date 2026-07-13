@@ -165,7 +165,7 @@ class TaskController extends Controller
         }
 
         return match ($task->frequency) {
-            'daily' => true,
+            'daily' => $dueDate->diffInDays($date) < ($task->duration_days ?? 1),
             'weekly' => $dueDate->diffInDays($date) % 7 === 0,
             'monthly' => (int) $dueDate->format('d') === (int) $date->format('d'),
             default => false,
