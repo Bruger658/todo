@@ -93,6 +93,7 @@
                                                                         title="{{ $task->title }}"
                                                                         data-calendar-task-date="{{ $day['date']->toDateString() }}"
                                                                         data-task-card-open="task-card-{{ $task->id }}"
+                                                                        data-task-card-edit-open="task-card-edit-{{ $task->id }}"
                                                                     >
                                                                         {{ $task->title }}
                                                                     </button>
@@ -164,6 +165,7 @@
                                 </div>
 
                                 <details class="mt-6 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+                                <details id="task-card-edit-{{ $task->id }}" class="mt-6 rounded-2xl border border-white/10 bg-slate-950/50 p-4" data-task-card-edit>    
                                     <summary class="cursor-pointer text-sm font-medium text-slate-200">Editar</summary>
                                     <form method="POST" action="{{ route('tasks.update', $task) }}" class="mt-4 grid gap-3 sm:grid-cols-2">
                                         @csrf
