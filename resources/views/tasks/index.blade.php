@@ -129,6 +129,73 @@
                             </div>
                         @endforeach
                     </section>
+
+                     @php
+                        $calendarMarkerStyles = [
+                            'daily' => ['label' => 'Diarias', 'dot' => 'bg-cyan-300', 'text' => 'text-cyan-100'],
+                            'weekly' => ['label' => 'Semanales', 'dot' => 'bg-amber-300', 'text' => 'text-amber-100'],
+                            'monthly' => ['label' => 'Mensuales', 'dot' => 'bg-fuchsia-300', 'text' => 'text-fuchsia-100'],
+                        ];
+                    @endphp
+
+                    <section class="mt-8 rounded-3xl border border-white/10 bg-slate-950/50 p-5 shadow-xl shadow-slate-950/20">
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-[0.25em] text-cyan-300">Calendario de actividades</p>
+                                <h2 class="mt-2 text-2xl font-bold capitalize text-white">{{ $calendar['monthLabel'] }}</h2>
+                                <p class="mt-2 text-sm text-slate-300">Las actividades diarias, semanales y mensuales se marcan con colores distintos según su repetición.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-wide">
+                                @foreach ($calendarMarkerStyles as $style)
+                                    <span class="inline-flex items-center gap-2 text-slate-300">
+                                        <span class="size-2.5 rounded-full {{ $style['dot'] }}"></span>
+                                        {{ $style['label'] }}
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="mt-6 grid grid-cols-7 gap-2 text-center text-xs font-bold uppercase tracking-wide text-slate-400">
+                            @foreach ($calendar['weekdays'] as $weekday)
+                                <div>{{ $weekday }}</div>
+                            @endforeach
+                        </div>
+
+                        <div class="mt-2 grid gap-2">
+                            @foreach ($calendar['weeks'] as $week)
+                                <div class="grid grid-cols-7 gap-2">
+                                    @foreach ($week as $day)
+                                        <div
+                                            class="min-h-28 rounded-2xl border p-2 text-left {{ $day['isCurrentMonth'] ? 'border-white/10 bg-slate-900/80' : 'border-white/5 bg-slate-950/30 text-slate-600' }} {{ $day['isToday'] ? 'ring-2 ring-cyan-300/70' : '' }}"
+                                            data-calendar-date="{{ $day['date']->toDateString() }}"
+                                        >
+                                            <div class="flex items-center justify-between gap-2">
+                                                <span class="text-sm font-bold {{ $day['isCurrentMonth'] ? 'text-white' : 'text-slate-600' }}">{{ $day['date']->format('j') }}</span>
+                                                @if ($day['isToday'])
+                                                    <span class="rounded-full bg-cyan-300 px-2 py-0.5 text-[0.65rem] font-bold uppercase text-slate-950">Hoy</span>
+                                                @endif
+                                            </div>
+
+                                            @if ($day['markers'] !== [])
+                                                <div class="mt-3 flex flex-col gap-1.5">
+                                                    @foreach ($day['markers'] as $frequency => $titles)
+                                                        @php($style = $calendarMarkerStyles[$frequency])
+                                                        <div class="rounded-xl bg-white/5 px-2 py-1" data-calendar-marker="{{ $frequency }}">
+                                                            <div class="flex items-center gap-1.5">
+                                                                <span class="size-2 rounded-full {{ $style['dot'] }}"></span>
+                                                                <span class="text-[0.65rem] font-bold uppercase tracking-wide {{ $style['text'] }}">{{ $style['label'] }}</span>
+                                                            </div>
+                                                            <p class="mt-1 truncate text-xs text-slate-300" title="{{ implode(', ', $titles) }}">{{ count($titles) }} actividad{{ count($titles) === 1 ? '' : 'es' }}</p>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        </div>
+                    </section>
                 </div>
 
                 <form method="POST" action="{{ route('tasks.store') }}" class="rounded-3xl border border-cyan-400/20 bg-cyan-400/10 p-6 shadow-xl shadow-cyan-950/20 lg:sticky lg:top-8 lg:self-start">

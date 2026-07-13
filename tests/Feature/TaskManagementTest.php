@@ -83,6 +83,39 @@ it('shows task groups by frequency and nearest schedule first', function () {
     ]);
 });
 
+it('shows current month calendar with recurring activity markers', function () {
+    $this->travelTo('2026-07-13 10:00:00');
+
+    Task::factory()->create([
+        'title' => 'Rutina diaria',
+        'frequency' => 'daily',
+        'due_date' => '2026-07-10',
+    ]);
+    Task::factory()->create([
+        'title' => 'Revisión semanal',
+        'frequency' => 'weekly',
+        'due_date' => '2026-07-06',
+    ]);
+    Task::factory()->create([
+        'title' => 'Pago mensual',
+        'frequency' => 'monthly',
+        'due_date' => '2026-07-13',
+    ]);
+
+    $response = $this->get(route('tasks.index'));
+
+    $response->assertSuccessful();
+    $response->assertSee('Calendario de actividades');
+    $response->assertSee('julio 2026');
+    $response->assertSee('data-calendar-date="2026-07-13"', false);
+    $response->assertSee('data-calendar-marker="daily"', false);
+    $response->assertSee('data-calendar-marker="weekly"', false);
+    $response->assertSee('data-calendar-marker="monthly"', false);
+    $response->assertSee('Rutina diaria');
+    $response->assertSee('Revisión semanal');
+    $response->assertSee('Pago mensual');
+});
+
 it('shows the due date before the realization time when a task has no description', function () {
     Task::factory()->create([
         'title' => 'Session con Laura',
