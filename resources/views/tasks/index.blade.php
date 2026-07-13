@@ -44,13 +44,13 @@
                                                         @endif
                                                     </div>
                                                     @if ($task->description)
+                                                        <p class="mt-3 text-sm text-slate-300">{{ $task->description }}</p>
+                                                    @endif    
+                                                    @if ($task->due_date)
                                                         <p class="mt-3 text-xs font-medium uppercase tracking-wide {{ $isOverdue ? 'text-rose-200' : 'text-cyan-200' }}">Fecha: {{ $task->due_date->format('d/m/Y') }}</p>
                                                     @endif
-                                                    @if ($task->due_date)
-                                                        <p class="mt-1 text-xs font-medium uppercase tracking-wide {{ $isOverdue ? 'text-rose-200' : 'text-cyan-200' }}">Hora: {{ \Illuminate\Support\Str::of($task->realization_time)->substr(0, 5) }}</p>
-                                                    @endif
                                                     @if ($task->realization_time)
-                                                        <p class="mt-1 text-xs font-medium uppercase tracking-wide text-cyan-200">Hora: {{ \Illuminate\Support\Str::of($task->realization_time)->substr(0, 5) }}</p>
+                                                        <p class="mt-1 text-xs font-medium uppercase tracking-wide {{ $isOverdue ? 'text-rose-200' : 'text-cyan-200' }}">Hora: {{ \Illuminate\Support\Str::of($task->realization_time)->substr(0, 5) }}</p>
                                                     @endif
                                                 </div>
 
@@ -137,7 +137,7 @@
                     <div class="mt-5 flex flex-col gap-4">
                         <label class="flex flex-col gap-2 text-sm font-medium text-slate-200">
                             Título
-                            <input name="title" value="{{ old('title') }}" required class="rounded-2xl border border-white/10 bg-white px-4 py-3 text-slate-950 outline-none ring-cyan-300 transition focus:ring-4" placeholder="Ej. Planificar la semana">
+                            <input name="title" value="{{ old('title') }}" required class="rounded-2xl border border-white/10 bg-white px-4 py-3 text-slate-950 outline-none ring-cyan-300 transition focus:ring-4" placeholder="Ej. Planificar el dia, la semana o el mes">
                             @error('title')<span class="text-sm text-rose-300">{{ $message }}</span>@enderror
                         </label>
                         <label class="flex flex-col gap-2 text-sm font-medium text-slate-200">

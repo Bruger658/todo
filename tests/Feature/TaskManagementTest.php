@@ -83,6 +83,25 @@ it('shows task groups by frequency and nearest schedule first', function () {
     ]);
 });
 
+it('shows the due date before the realization time when a task has no description', function () {
+    Task::factory()->create([
+        'title' => 'Session con Laura',
+        'description' => null,
+        'frequency' => 'daily',
+        'due_date' => '2026-07-13',
+        'realization_time' => '18:15',
+    ]);
+
+    $response = $this->get(route('tasks.index'));
+
+    $response->assertSuccessful();
+    $response->assertSeeInOrder([
+        'Session con Laura',
+        'Fecha: 13/07/2026',
+        'Hora: 18:15',
+    ]);
+});
+
 it('marks overdue pending tasks in red automatically', function () {
     $this->travelTo('2026-07-08 10:00:00');
 
