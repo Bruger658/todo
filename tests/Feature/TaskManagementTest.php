@@ -198,5 +198,38 @@ it('requires a valid frequency when creating a task', function () {
     $response->assertSessionHasErrors('frequency');
 
     expect(Task::query()->count())->toBe(0);
+});
+
+it('asks whether to delete or keep a pending task when marking it done', function () {
+    $task = Task::factory()->create([
+        'title' => 'Comprar leche',
+        'frequency' => 'daily',
+        'completed_at' => null,
+    ]);
+
+    $response = $this->get(route('tasks.index'));
+
+    $response->assertSuccessful();
+    $response->assertSee('data-completion-choice-open="completion-choice-'.$task->id.'"', false);
+    $response->assertSee('¿Qué querés hacer con “Comprar leche”?');
+    $response->assertSee('Borrar');
+    $response->assertSee('Guardar hecha');
+});
+
+it('shows reopen for tasks kept as completed', function () {
+    $task = Task::factory()->create([
+        'title' => 'Lavar platos',
+        'frequency' => 'daily',
+        'completed_at' => null,
+    ]);
+
+    $this->patch(route('tasks.toggle', $task))
+        ->assertRedirect(route('tasks.index'));
+
+    $response = $this->get(route('tasks.index'));
+
+    $response->assertSuccessful();
+    $response->assertSee('Reabrir');
+    $response->assertDontSee('completion-choice-'.$task->id, false);
 }); 
 

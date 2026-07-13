@@ -30,7 +30,7 @@
                                     <h2 class="text-2xl font-bold text-white">{{ $label }}</h2>
                                     <span class="rounded-full bg-white/10 px-3 py-1 text-sm text-slate-300">{{ $tasksByFrequency->get($frequency, collect())->count() }}</span>
                                 </div>
-                                <p class="mt-2 text-xs font-medium uppercase tracking-wide text-cyan-200">Más próximas primero</p>
+                                <p class="mt-2 text-xs font-medium uppercase tracking-wide text-cyan-200">Ordenadas de mas viejas a mas nuevas</p>
                                 <div class="mt-5 flex flex-col gap-4">
                                     @forelse ($tasksByFrequency->get($frequency, collect()) as $task)
                                          @php($isOverdue = $task->isOverdue())
@@ -53,14 +53,52 @@
                                                         <p class="mt-1 text-xs font-medium uppercase tracking-wide text-cyan-200">Hora: {{ \Illuminate\Support\Str::of($task->realization_time)->substr(0, 5) }}</p>
                                                     @endif
                                                 </div>
-                                                <form method="POST" action="{{ route('tasks.toggle', $task) }}">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <button class="rounded-full border border-white/10 px-3 py-1 text-sm font-semibold {{ $task->isCompleted() ? 'text-amber-200 hover:bg-amber-300/10' : 'text-emerald-200 hover:bg-emerald-300/10' }}">
-                                                        {{ $task->isCompleted() ? 'Reabrir' : 'Hecha' }}
+
+                                                @if ($task->isCompleted())
+                                                    <form method="POST" action="{{ route('tasks.toggle', $task) }}">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <button class="rounded-full border border-white/10 px-3 py-1 text-sm font-semibold text-amber-200 hover:bg-amber-300/10">
+                                                            Reabrir
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <button
+                                                        type="button"
+                                                        class="rounded-full border border-white/10 px-3 py-1 text-sm font-semibold text-emerald-200 hover:bg-emerald-300/10"
+                                                        data-completion-choice-open="completion-choice-{{ $task->id }}"
+                                                    >Hecha                                                
                                                     </button>
-                                                </form>
+                                                @endif
                                             </div>
+
+                                            @unless ($task->isCompleted())
+                                                <div
+                                                    id="completion-choice-{{ $task->id }}"
+                                                    class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 px-4 backdrop-blur-sm"
+                                                    data-completion-choice
+                                                >
+                                                    <div class="w-full max-w-md rounded-3xl border border-white/10 bg-slate-900 p-6 shadow-2xl shadow-slate-950/40">
+                                                        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-300">Actividad hecha</p>
+                                                        <h4 class="mt-3 text-2xl font-bold text-white">¿Qué querés hacer con “{{ $task->title }}”?</h4>
+                                                        <p class="mt-2 text-sm text-slate-300">Podés borrarla definitivamente o guardarla como completada para que luego aparezca la opción Reabrir.</p>
+                                                        <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+                                                            <button type="button" class="rounded-2xl border border-white/10 px-4 py-2 text-sm font-semibold text-slate-200 hover:bg-white/10" data-completion-choice-close>Cancelar</button>
+                                                            <form method="POST" action="{{ route('tasks.destroy', $task) }}">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button class="text-sm font-semibold text-red-200 transition hover:text-red-400">Eliminar actividad</button>
+                                                            </form>
+                                                            <form method="POST" action="{{ route('tasks.toggle', $task) }}">
+                                                                @csrf
+                                                                @method('PATCH')
+                                                                <button class="w-full rounded-2xl bg-emerald-300 px-4 py-2 text-sm font-bold text-slate-950 transition hover:bg-emerald-200 sm:w-auto">Guardar hecha</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endunless
+
                                             <details class="mt-4">
                                                 <summary class="cursor-pointer text-sm font-medium text-slate-300">Editar</summary>
                                                 <form method="POST" action="{{ route('tasks.update', $task) }}" class="mt-3 flex flex-col gap-3">
@@ -75,12 +113,12 @@
                                                     </select>
                                                     <input type="date" name="due_date" value="{{ old('due_date', $task->due_date?->format('Y-m-d')) }}" class="rounded-xl bg-white px-3 py-2 text-sm text-slate-950">
                                                     <input type="time" name="realization_time" value="{{ old('realization_time', $task->realization_time ? \Illuminate\Support\Str::of($task->realization_time)->substr(0, 5) : null) }}" class="rounded-xl bg-white px-3 py-2 text-sm text-slate-950">
-                                                    <button class="rounded-xl bg-white px-3 py-2 text-sm font-bold text-slate-950">Guardar cambios</button>
+                                                    <button class="rounded-xl bg-cyan-100 px-3 py-2 text-sm font-bold text-slate-950 transition hover:bg-cyan-200">Guardar cambios</button>
                                                 </form>
                                                 <form method="POST" action="{{ route('tasks.destroy', $task) }}" class="mt-3">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button class="text-sm font-semibold text-rose-300 hover:text-rose-200">Eliminar actividad</button>
+                                                    <button class="text-sm font-semibold text-red-500 transition hover:text-red-400">Eliminar actividad</button>
                                                 </form>
                                             </details>
                                         </article>

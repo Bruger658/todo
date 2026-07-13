@@ -9,3 +9,29 @@ document.querySelectorAll('[data-auto-dismiss]').forEach((element) => {
         }, 300);
     }, timeout);
 });
+
+document.querySelectorAll('[data-completion-choice-open]').forEach((button) => {
+    button.addEventListener('click', () => {
+        const dialog = document.getElementById(button.dataset.completionChoiceOpen);
+
+        dialog?.classList.remove('hidden');
+        dialog?.classList.add('flex');
+    });
+});
+
+document.querySelectorAll('[data-completion-choice]').forEach((dialog) => {
+    const closeDialog = () => {
+        dialog.classList.add('hidden');
+        dialog.classList.remove('flex');
+    };
+
+    dialog.querySelectorAll('[data-completion-choice-close]').forEach((button) => {
+        button.addEventListener('click', closeDialog);
+    });
+
+    dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) {
+            closeDialog();
+        }
+    });
+});
