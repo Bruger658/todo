@@ -22,17 +22,9 @@ document.querySelectorAll('[data-completion-choice-open]').forEach((button) => {
 document.querySelectorAll('[data-task-card-open]').forEach((button) => {
     button.addEventListener('click', () => {
         const dialog = document.getElementById(button.dataset.taskCardOpen);
-         const editDetails = button.dataset.taskCardEditOpen
-            ? document.getElementById(button.dataset.taskCardEditOpen)
-            : null;
-
+        
         dialog?.classList.remove('hidden');
-        dialog?.classList.add('flex');
-
-        if (editDetails instanceof HTMLDetailsElement) {
-            editDetails.open = true;
-            editDetails.querySelector('input[name="title"]')?.focus();
-        }
+        dialog?.classList.add('flex');       
     });
 });
 

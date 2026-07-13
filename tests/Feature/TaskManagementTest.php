@@ -116,7 +116,9 @@ it('shows current month calendar with recurring activity markers', function () {
     $response->assertSee('data-calendar-marker="weekly"', false);
     $response->assertSee('data-calendar-marker="monthly"', false);
     $response->assertSee('data-task-card-open="task-card-'.Task::where('title', 'Rutina diaria')->value('id').'"', false);
-    $response->assertSee('data-task-card-edit-open="task-card-edit-'.Task::where('title', 'Pago mensual')->value('id').'"', false);
+    $response->assertSee('data-task-card-open="task-card-'.Task::where('title', 'Revisión semanal')->value('id').'"', false);
+    $response->assertSee('data-task-card-open="task-card-'.Task::where('title', 'Pago mensual')->value('id').'"', false);
+    $response->assertDontSee('data-task-card-edit-open', false);
     $response->assertSee('Rutina diaria');
     $response->assertSee('Revisión semanal');
     $response->assertSee('Pago mensual');

@@ -92,8 +92,7 @@
                                                                         class="truncate rounded-lg px-2 py-1 text-left text-xs text-slate-200 transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-300"
                                                                         title="{{ $task->title }}"
                                                                         data-calendar-task-date="{{ $day['date']->toDateString() }}"
-                                                                        data-task-card-open="task-card-{{ $task->id }}"
-                                                                        data-task-card-edit-open="task-card-edit-{{ $task->id }}"
+                                                                        data-task-card-open="task-card-{{ $task->id }}"                                                                        
                                                                     >
                                                                         {{ $task->title }}
                                                                     </button>
@@ -164,9 +163,9 @@
                                     </form>
                                 </div>
 
-                                <details class="mt-6 rounded-2xl border border-white/10 bg-slate-950/50 p-4">
-                                <details id="task-card-edit-{{ $task->id }}" class="mt-6 rounded-2xl border border-white/10 bg-slate-950/50 p-4" data-task-card-edit>    
-                                    <summary class="cursor-pointer text-sm font-medium text-slate-200">Editar</summary>
+                                    <details id="task-card-details-{{ $task->id }}" class="mt-6 rounded-2xl border border-white/10 bg-slate-950/50 p-4" data-task-card-details>
+                                        <summary class="cursor-pointer text-sm font-medium text-slate-200">Detalles</summary>
+                                    
                                     <form method="POST" action="{{ route('tasks.update', $task) }}" class="mt-4 grid gap-3 sm:grid-cols-2">
                                         @csrf
                                         @method('PUT')
