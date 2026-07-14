@@ -80,7 +80,7 @@
                                                         @php
                                                             $style = $calendarMarkerStyles[$frequency];
                                                         @endphp
-                                                        <div class="rounded-xl bg-white/5 px-2 py-1" data-calendar-marker="{{ $frequency }}">
+                                                        <div class="cursor-pointer rounded-xl bg-white/5 px-2 py-1 transition hover:bg-white/10" data-calendar-marker="{{ $frequency }}">
                                                             <div class="flex items-center gap-1.5">
                                                                 <span class="size-2 rounded-full {{ $style['dot'] }}"></span>
                                                                 <span class="text-[0.65rem] font-bold uppercase tracking-wide {{ $style['text'] }}">{{ $style['label'] }}</span>
