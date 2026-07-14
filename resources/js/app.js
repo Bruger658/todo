@@ -23,17 +23,40 @@ function closeDialog(dialog) {
     dialog.classList.add('hidden');
     dialog.classList.remove('flex');
 }
+  
+function openDialogFromTrigger(trigger, dataAttribute) {
+    openDialog(document.getElementById(trigger.dataset[dataAttribute]));
+}
 
-document.querySelectorAll('[data-completion-choice-open]').forEach(function (button) {
-    button.addEventListener('click', function () {
-        openDialog(document.getElementById(button.dataset.completionChoiceOpen));
-    });
-});    
+document.addEventListener('click', function (event) {
+    var completionChoiceTrigger = event.target.closest('[data-completion-choice-open]');
 
-document.querySelectorAll('[data-task-card-open]').forEach(function (button) {
-    button.addEventListener('click', function () {
-        openDialog(document.getElementById(button.dataset.taskCardOpen));
-    });
+    if (completionChoiceTrigger) {
+        openDialogFromTrigger(completionChoiceTrigger, 'completionChoiceOpen');
+
+        return;
+    }
+
+    var taskCardTrigger = event.target.closest('[data-task-card-open]');
+
+    if (taskCardTrigger) {
+        openDialogFromTrigger(taskCardTrigger, 'taskCardOpen');
+    }
+});
+
+document.addEventListener('keydown', function (event) {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+        return;
+    }
+
+    var taskCardTrigger = event.target.closest('[data-task-card-open]');
+
+    if (! taskCardTrigger || event.target.closest('button, a, input, select, textarea, summary')) {
+        return;
+    }
+
+    event.preventDefault();
+    openDialogFromTrigger(taskCardTrigger, 'taskCardOpen');
 });
 
 document.querySelectorAll('[data-task-card]').forEach(function (dialog) {
@@ -41,7 +64,7 @@ document.querySelectorAll('[data-task-card]').forEach(function (dialog) {
         closeDialog(dialog);
     };
 
-dialog.querySelectorAll('[data-task-card-close]').forEach(function (button) {
+    dialog.querySelectorAll('[data-task-card-close]').forEach(function (button) {
         button.addEventListener('click', closeCurrentDialog);
     });
     
@@ -55,7 +78,7 @@ dialog.querySelectorAll('[data-task-card-close]').forEach(function (button) {
 
 document.querySelectorAll('[data-completion-choice]').forEach(function (dialog) {
     var closeCurrentDialog = function () {
-    closeDialog(dialog);
+        closeDialog(dialog);
     };
 
     dialog.querySelectorAll('[data-completion-choice-close]').forEach(function (button) {

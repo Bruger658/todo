@@ -76,17 +76,23 @@
 
                                             @if ($day['markers'] !== [])
                                                 <div class="mt-3 flex flex-col gap-1.5">
-                                                    @foreach ($day['markers'] as $frequency => $tasks)
+                                                    @foreach ($day['markers'] as $frequency => $markerTasks)
                                                         @php
                                                             $style = $calendarMarkerStyles[$frequency];
                                                         @endphp
-                                                        <div class="cursor-pointer rounded-xl bg-white/5 px-2 py-1 transition hover:bg-white/10" data-calendar-marker="{{ $frequency }}">
-                                                            <div class="flex items-center gap-1.5">
+                                                        <div
+                                                            class="cursor-pointer rounded-xl bg-white/5 px-2 py-1 transition hover:bg-white/10 focus-within:ring-2 focus-within:ring-cyan-300"
+                                                            data-calendar-marker="{{ $frequency }}"
+                                                            data-task-card-open="task-card-{{ $markerTasks[0]->id }}"
+                                                            role="button"
+                                                            tabindex="0"
+                                                            aria-label="Abrir {{ $style['label'] }} del {{ $day['date']->format('d/m/Y') }}"
+                                                        >                                                        
                                                                 <span class="size-2 rounded-full {{ $style['dot'] }}"></span>
                                                                 <span class="text-[0.65rem] font-bold uppercase tracking-wide {{ $style['text'] }}">{{ $style['label'] }}</span>
                                                             </div>  
                                                             <div class="mt-2 flex flex-col gap-1">
-                                                                @foreach ($tasks as $task)
+                                                                 @foreach ($markerTasks as $task)
                                                                     <button
                                                                         type="button"
                                                                         class="truncate rounded-lg px-2 py-1 text-left text-xs text-slate-200 transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-300"

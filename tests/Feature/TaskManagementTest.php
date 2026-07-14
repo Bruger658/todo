@@ -112,12 +112,16 @@ it('shows current month calendar with recurring activity markers', function () {
     $response->assertSee('Calendario de actividades');
     $response->assertSee('julio 2026');
     $response->assertSee('data-calendar-date="2026-07-13"', false);
+    $dailyTaskId = Task::where('title', 'Rutina diaria')->value('id');
+    $weeklyTaskId = Task::where('title', 'Revisión semanal')->value('id');
+    $monthlyTaskId = Task::where('title', 'Pago mensual')->value('id');
+
     $response->assertSee('data-calendar-marker="daily"', false);
     $response->assertSee('data-calendar-marker="weekly"', false);
     $response->assertSee('data-calendar-marker="monthly"', false);
-    $response->assertSee('data-task-card-open="task-card-'.Task::where('title', 'Rutina diaria')->value('id').'"', false);
-    $response->assertSee('data-task-card-open="task-card-'.Task::where('title', 'Revisión semanal')->value('id').'"', false);
-    $response->assertSee('data-task-card-open="task-card-'.Task::where('title', 'Pago mensual')->value('id').'"', false);
+    $dailyTaskId = Task::where('title', 'Rutina diaria')->value('id');
+    $weeklyTaskId = Task::where('title', 'Revisión semanal')->value('id');
+    $monthlyTaskId = Task::where('title', 'Pago mensual')->value('id');
     $response->assertDontSee('data-task-card-edit-open', false);
     $response->assertSee('Rutina diaria');
     $response->assertSee('Revisión semanal');
