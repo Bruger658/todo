@@ -26,8 +26,8 @@
                      @php
                         $calendarMarkerStyles = [
                             'daily' => ['label' => 'Diarias', 'dot' => 'bg-cyan-300', 'text' => 'text-cyan-100'],
-                            'weekly' => ['label' => 'Semanales', 'dot' => 'bg-amber-300', 'text' => 'text-amber-100'],
-                            'monthly' => ['label' => 'Mensuales', 'dot' => 'bg-fuchsia-300', 'text' => 'text-fuchsia-100'],
+                            'weekly' => ['label' => 'Semanal', 'dot' => 'bg-amber-300', 'text' => 'text-amber-100'],
+                            'monthly' => ['label' => 'Mensual', 'dot' => 'bg-fuchsia-300', 'text' => 'text-fuchsia-100'],
                         ];
                     @endphp
 
@@ -64,11 +64,10 @@
                                 <div class="grid grid-cols-7 gap-3">
                                     @foreach ($week as $day)
                                         <div
-                                            class="min-h-28 rounded-2xl border p-2 text-left {{ $day['isCurrentMonth'] ? 'border-white/10 bg-slate-900/80' : 'border-white/5 bg-slate-950/30 text-slate-600' }} {{ $day['isToday'] ? 'ring-2 ring-cyan-300/70' : '' }}"
-                                            data-calendar-date="{{ $day['date']->toDateString() }}"
-                                        >
+                                            class="min-h-28 rounded-2xl border p-2 text-left {{ $day['isCurrentMonth'] ? 'border-white/10 bg-slate-900/80' : 'border-white/5 bg-slate-950/30 text-slate-600' }} {{ $day['isToday'] ? 'ring-2 ring-cyan-300/70' : '' }}"                                        >
                                             <div class="flex items-center justify-between gap-2">
                                                 <span class="text-sm font-bold {{ $day['isCurrentMonth'] ? 'text-white' : 'text-slate-600' }}">{{ $day['date']->format('j') }}</span>
+                                                
                                                 @if ($day['isToday'])
                                                     <span class="rounded-full bg-cyan-300 px-2 py-0.5 text-[0.65rem] font-bold uppercase text-slate-950">Hoy</span>
                                                 @endif
@@ -82,7 +81,6 @@
                                                         @endphp
                                                         <div
                                                             class="cursor-pointer rounded-xl bg-white/5 px-2 py-1 transition hover:bg-white/10 focus-within:ring-2 focus-within:ring-cyan-300"
-                                                            data-calendar-marker="{{ $frequency }}"
                                                             data-task-card-open="task-card-{{ $markerTasks[0]->id }}"
                                                             role="button"
                                                             tabindex="0"
@@ -93,17 +91,17 @@
                                                             </div>  
                                                             <div class="mt-2 flex flex-col gap-1">
                                                                  @foreach ($markerTasks as $task)
-                                                                    <button
-                                                                        type="button"
-                                                                        class="truncate rounded-lg px-2 py-1 text-left text-xs text-slate-200 transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-300"
-                                                                        title="{{ $task->title }}"
-                                                                        data-calendar-task-date="{{ $day['date']->toDateString() }}"
-                                                                        data-task-card-open="task-card-{{ $task->id }}"                                                                        
-                                                                    >
-                                                                        {{ $task->title }}
-                                                                    </button>
-                                                                @endforeach
-                                                            </div>                                                          
+
+                                                                <button
+                                                                    type="button"
+                                                                    class="truncate rounded-lg px-2 py-1 text-left text-xs text-slate-200 transition hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-300"                                                                    title="{{ $task->title }}"
+                                                                    title="{{ $task->title }}"
+                                                                    data-calendar-task-date="{{ $day['date']->toDateString() }}"
+                                                                    data-task-card-open="task-card-{{ $task->id }}"
+                                                                >
+                                                                    {{ $task->title }}
+                                                                </button>
+                                                            @endforeach                                                      
                                                         </div>
                                                     @endforeach
                                                 </div>
